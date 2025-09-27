@@ -19,6 +19,17 @@ const sections = {
   results: document.getElementById('results')
 };
 
+// Modal refs
+const modal = {
+  container: document.getElementById('quizSetupModal'),
+  topic: document.getElementById('quizTopic'),
+  count: document.getElementById('questionCount'),
+  startBtn: document.getElementById('startQuizBtn'),
+  cancelBtn: document.getElementById('cancelQuizBtn'),
+  numberUp: document.querySelector('.number-up'),
+  numberDown: document.querySelector('.number-down')
+};
+
 const els = {
   questionText: document.getElementById('question-text'),
   optionsContainer: document.getElementById('options-container'),
@@ -49,16 +60,55 @@ document.getElementById('moreBtn').addEventListener('click', generateMoreQuestio
 document.getElementById('tryAgainBtn').addEventListener('click', restartQuiz);
 document.getElementById('backHomeBtn').addEventListener('click', () => showSection('home'));
 
-// Prompt for topic + count then fetch initial questions
-async function startQuiz() {
-  const topic = (prompt('Enter topic for quiz (e.g. Python basics):', currentTopic || 'Python basics') || '').trim();
-  if (!topic) return;
-  const countInput = prompt('How many questions? (1-12):', String(currentCount || 5));
-  const count = parseInt(countInput, 10) || 5;
-  if (count < 1 || count > 20) {
-    alert('Please choose between 1 and 20 questions.');
+// Modal control functions
+function showModal() {
+  modal.container.classList.add('active');
+  modal.topic.value = currentTopic || '';
+  modal.count.value = currentCount || 5;
+}
+
+function hideModal() {
+  modal.container.classList.remove('active');
+}
+
+// Handle number input controls
+modal.numberUp.addEventListener('click', () => {
+  const val = parseInt(modal.count.value, 10) || 5;
+  modal.count.value = Math.min(20, val + 1);
+});
+
+modal.numberDown.addEventListener('click', () => {
+  const val = parseInt(modal.count.value, 10) || 5;
+  modal.count.value = Math.max(1, val - 1);
+});
+
+// Handle modal buttons
+modal.startBtn.addEventListener('click', async () => {
+  const topic = modal.topic.value.trim();
+  const count = parseInt(modal.count.value, 10) || 5;
+  
+  if (!topic) {
+    modal.topic.focus();
     return;
   }
+  if (count < 1 || count > 20) {
+    modal.count.focus();
+    return;
+  }
+  
+  hideModal();
+  await initQuiz(topic, count);
+});
+
+modal.cancelBtn.addEventListener('click', hideModal);
+
+// Show setup modal when Start Quiz is clicked
+function startQuiz() {
+  showModal();
+}
+
+// Initialize quiz with given topic and count
+async function initQuiz(topic, count) {
 
   // reset state
   currentTopic = topic;
@@ -67,6 +117,11 @@ async function startQuiz() {
   quizData = [];
   currentQuestionIndex = 0;
   selectedAnswers = [];
+  
+  // Show loading state
+  showSection('quiz');
+  els.questionText.textContent = 'Generating your quiz...';
+  els.optionsContainer.innerHTML = '';
   score = 0;
 
   // fetch and start
@@ -160,12 +215,16 @@ async function fetchAndAppendQuestions(topic, count) {
 
 // Show loading overlay or message (simple)
 function showLoading(on, message='') {
-  // reuse question text area to show loading message if in quiz view
+  const overlay = document.getElementById('loadingOverlay');
+  if (!overlay) return;
   if (on) {
+    overlay.setAttribute('aria-hidden', 'false');
+    overlay.classList.add('active');
     els.questionText.textContent = message || 'Loading...';
     els.optionsContainer.innerHTML = '';
   } else {
-    // nothing
+    overlay.setAttribute('aria-hidden', 'true');
+    overlay.classList.remove('active');
   }
 }
 

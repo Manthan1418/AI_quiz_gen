@@ -13,6 +13,13 @@
       <div class="grid-lines"></div>
       <div class="floating-particles"></div>
     </div>
+    <!-- Loading overlay shown while quiz questions are being generated -->
+    <div id="loadingOverlay" class="loading-overlay" aria-hidden="true">
+      <div class="loader">
+        <div class="spinner"></div>
+        <div class="loader-text">Generating questions — please wait...</div>
+      </div>
+    </div>
 
     <header class="header">
       <div class="logo">
@@ -99,6 +106,31 @@
         </div>
       </section>
     </main>
+
+    <!-- Quiz Setup Modal -->
+    <div id="quizSetupModal" class="modal">
+      <div class="modal-content">
+        <h2 class="modal-title">Configure Your Quiz</h2>
+        <div class="modal-form">
+          <div class="form-group">
+            <label for="quizTopic">Topic:</label>
+            <input type="text" id="quizTopic" placeholder="Enter quiz topic (e.g., JavaScript, World History)" required>
+          </div>
+          <div class="form-group">
+            <label for="questionCount">Number of Questions:</label>
+            <div class="number-input">
+              <button type="button" class="number-down">-</button>
+              <input type="number" id="questionCount" min="1" max="20" value="5">
+              <button type="button" class="number-up">+</button>
+            </div>
+          </div>
+          <div class="modal-actions">
+            <button class="btn btn-primary" id="startQuizBtn">Start Quiz</button>
+            <button class="btn btn-outline" id="cancelQuizBtn">Cancel</button>
+          </div>
+        </div>
+      </div>
+    </div>
   </div>
 
   <script src="script.js"></script>
