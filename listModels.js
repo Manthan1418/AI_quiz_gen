@@ -3,7 +3,7 @@ const { GoogleGenerativeAI } = require('@google/generative-ai');
 
 async function listModels() {
   try {
-    const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
+    const genAI = new GoogleGenerativeAI(process.env.GOOGLE_API_KEY);
     const models = await genAI.getGenerativeModel({ model: 'gemini-pro' }).listModels();
     
     console.log('Available models:');

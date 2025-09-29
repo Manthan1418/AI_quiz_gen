@@ -6,7 +6,7 @@ const { GoogleGenerativeAI } = require('@google/generative-ai');
 
 // Gemini SDK
 let genAI = null;
-const GEMINI_API_KEY = process.env.GEMINI_API_KEY;
+const GEMINI_API_KEY = process.env.GOOGLE_API_KEY;
 // Try the most commonly available model by default
 const GEMINI_MODEL = process.env.GEMINI_MODEL || process.env.MODEL_NAME || 'gemini-pro';
 
@@ -81,16 +81,17 @@ function extractJsonFromText(rawText) {
 }
 
 
-// Lazy-init Gemini
+// Initialize Gemini
 function ensureGemini() {
   if (genAI) return;
   try {
     if (!GEMINI_API_KEY) {
-      console.warn('Warning: GEMINI_API_KEY is not set. Set it in .env before using Gemini.');
+      throw new Error('GOOGLE_API_KEY is not set in .env file. Please set it before using the application.');
     }
     genAI = new GoogleGenerativeAI(GEMINI_API_KEY);
+    console.log('Gemini API initialized successfully');
   } catch (e) {
-    console.warn('Gemini SDK not available. Install with `npm i @google/generative-ai`.');
+    console.error('Failed to initialize Gemini API:', e.message);
     throw e;
   }
 }
